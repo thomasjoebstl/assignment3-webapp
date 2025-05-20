@@ -1,0 +1,32 @@
+name: Build and Push Docker Images
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and Push Web Image
+        run: |
+          docker build -t ghcr.io/${{ github.repository }}-web:latest .
+          docker push ghcr.io/${{ github.repository }}-web:latest
+
+      - name: Build and Push DB Image (with SQL init)
+        run: |
+          echo "FROM postgres" > Dockerfile.db
+          echo "COPY ./db/init.sql /docker-entrypoint-initdb.d/" >> Dockerfile.db
+          docker build -t ghcr.io/${{ github.repository }}-db:latest -f Dockerfile.db .
+          docker push ghcr.io/${{ github.repository }}-db:latest
