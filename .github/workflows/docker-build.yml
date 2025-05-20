@@ -21,12 +21,12 @@ jobs:
 
       - name: Build and Push Web Image
         run: |
-          docker build -t ghcr.io/${{ github.repository }}-web:latest .
-          docker push ghcr.io/${{ github.repository }}-web:latest
+          docker build -t ghcr.io/${{ github.actor }}/assignment3-webapp-web:latest .
+          docker push ghcr.io/${{ github.actor }}/assignment3-webapp-web:latest
 
       - name: Build and Push DB Image (with SQL init)
         run: |
           echo "FROM postgres" > Dockerfile.db
           echo "COPY ./db/init.sql /docker-entrypoint-initdb.d/" >> Dockerfile.db
-          docker build -t ghcr.io/${{ github.repository }}-db:latest -f Dockerfile.db .
-          docker push ghcr.io/${{ github.repository }}-db:latest
+          docker build -t ghcr.io/${{ github.actor }}/assignment3-webapp-db:latest -f Dockerfile.db .
+          docker push ghcr.io/${{ github.actor }}/assignment3-webapp-db:latest
